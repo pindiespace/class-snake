@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+
+	<head>
+
+		<title>Snake Revised</title>
+
+		<style>
+
+		.character {
+			/* display:none; */
+			border: 1px solid black;
+			width: 10px;
+			height: 10px;
+		}
+
+		#snakeId {
+			position:absolute;
+			background-color: green;
+		}
+
+		#frogId {
+			position:absolute;
+			background-color: red;
+		}
+
+		#arenaId {
+			position:relative;
+			width:400px;
+			height:400px;
+			border: 2px dotted #aaa;
+		}
+
+		</style>
+
+	</head>
+
+	<body>
+
+		<header><h1>Snake MVC</h1></header>
+
+		<section id="content">
+
+			<div id="arenaId">
+
+				<div id="snakeId" class="character"></div>
+
+				<div id="frogId" class="character"></div>
+
+			</div>
+
+		</section>
+
+		<footer>
+		</footer>
+
+		<script src="snake-mvc.js"></script>
+
+		<!--start game immediately (change later)-->
+		<script>window.onload = function () {
+			
+				game.init();
+
+			}
+		</script>
+
+	</body>
+
+
+</html>

@@ -5,6 +5,8 @@ var game = ( function () {
 
 	// STATE VARIABLES
 
+	var that = this;
+
 	// MODEL
 	var Canvas = function ( id ) {
 
@@ -17,7 +19,51 @@ var game = ( function () {
 			y: 0
 		};
 
+		// TODO: figure out how to read the CSS stylesheet
+		// element.getComputedStyle
+		// and use it to set this.dimensions
+
+		this.dimensions = {
+			width: 400,
+			height: 400
+		}
+
+		// Set the local style from the CSS stylesheet
+
+		this.dom.style.width = this.dimensions.width + 'px';
+
+		this.dom.style.height = this.dimensions.height + 'px';
+
 		this.coords = [];
+
+		// detect if Snake hits the walls.
+
+		this.snakeCollided = function ( snake ) {
+
+			var x = snake.position.x;
+
+			var y = snake.position.y;
+
+			//console.log( 'snake is at: ' + x + ',' + y );
+
+			//var top = parseInt( this.dom.style.top );
+			//var left = parseInt( this.dom.style.left );
+			//var bottom = parseInt( this.dom.style.bottom );
+			//var right = parseInt( this.dom.style.right );
+
+			var width = parseInt( this.dom.style.width );
+
+			var height = parseInt( this.dom.style.height );
+
+			if ( x > width ) return true;
+			if ( y > height ) return true;
+
+
+			//console.log( top + ',' + left + ',' + bottom + ',' + right + ',' + width + ',' + height );
+
+			//console.log( 'snake collided with wall' );
+
+		};
 
 	}; // screen coordinates
 
@@ -73,7 +119,7 @@ var game = ( function () {
 
 		this.update = function ( dx, dy ) {
 
-			console.log( 'dx:' + dx + ' dy:' + dy)
+			//console.log( 'dx:' + dx + ' dy:' + dy)
 
 			dx *= this.speed.dx;
 
@@ -85,7 +131,7 @@ var game = ( function () {
 
 			var y = parseInt( this.dom.style.top );
 
-			console.log( 'x:' + x + ' y:' + y );
+			//console.log( 'x:' + x + ' y:' + y );
 
 			x = x + dx;
 
@@ -93,7 +139,7 @@ var game = ( function () {
 
 			// change by dx and dy
 
-			console.log( 'new x:' + x + ' y:' + y );
+			//console.log( 'new x:' + x + ' y:' + y );
 
 			// call updatePosition
 
@@ -103,13 +149,19 @@ var game = ( function () {
 
 		this.updatePosition = function ( x, y ) {
 
-			console.log( 'in this.updatePosition() x:' + x + ' y:' + y );
+			//console.log( 'in this.updatePosition() x:' + x + ' y:' + y );
 
 			// change this.dom.style
 
 			this.dom.style.top = y + 'px';
 
 			this.dom.style.left = x + 'px';
+
+			// update our internal value.
+
+			this.position.x = x;
+
+			this.position.y = y;
 
 		};
 
@@ -154,6 +206,8 @@ var game = ( function () {
 
 	// CONTROLLER
 
+	window.arena = arena;
+
 	var animateId;
 
 	/** 
@@ -161,12 +215,19 @@ var game = ( function () {
 	 */
 	function animate () {
 
-		snake.update( 1, 1 );
+		if( arena.snakeCollided( snake ) ) {
+
+			snake.update( -1, -1 ); // In the future, move it to the other side, or end game
+
+		} else {
+
+			snake.update( 1, 1 );
+
+		}
 
 		animateId = requestAnimationFrame( animate );
 
-
-	}
+	};
 
 	function init () {
 
@@ -180,11 +241,38 @@ var game = ( function () {
 
 		requestAnimationFrame( animate );
 
+		var controls = document.getElementById( 'controls' );
+
+		controls.onclick = function ( e ) {
+
+			e.preventDefault();
+
+			var speedField = document.getElementById('snake_speed');
+
+			var speedValue = parseInt( speedField.value );
+
+			console.log( 'i, ' + e.target.id + ', was clicked, speed value:' + speedValue );
+
+			if ( isNaN( speedValue ) ) {
+
+				alert( 'NOT A NUMBER ' );
+
+			} else {
+
+				window.strangeThis = that;
+				console.log( "THIS:" + that );
+
+				that.snake.setSpeed( speedValue, speedValue );
+
+			}
+
+		};
 
 		// connect user input (controller)
 		document.onkeydown = function ( e ) {
 
-			var code = e.keyCode;
+			var code = e.keyCode; // get the key pressed
+			window.evt = e;
 
 			console.log( "keycode:" + code )
 
